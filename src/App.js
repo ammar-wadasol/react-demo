@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import React from "react";
+import Sidebar from "./Sidebar";
+import Chat from "./Chat";
 function App() {
+  // const [data, setData] = useState({name: "hashir"});
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex bg-gray-400 p-4 h-screen w-screen">
+      <div className="flex bg-gray-200 w-full shadow-xl">
+        <Sidebar />
+        <Chat />
+      </div>
     </div>
   );
 }
 
 export default App;
+
+/* <input
+  type="text"
+  onChange={({target: {value}}) => {
+    setData({name: value});
+  }}
+  />
+  <button
+  onClick={() => {
+    setData({name: "Hello"});
+  }}
+  >
+  Set Name
+  </button>
+
+
+// const Test = ({data: {name}}) => {
+//   return <h1>{name}</h1>;
+// };
+<Test data={data} /> */
