@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Avatar, IconButton} from "@material-ui/core";
 import {
   SearchOutlined,
@@ -7,8 +7,23 @@ import {
   InsertEmoticon,
   Mic,
 } from "@material-ui/icons";
+import axios from "./axios";
+import ScrollToBottom from "react-scroll-to-bottom";
 
-const Chat = () => {
+const Chat = ({messages}) => {
+  const [input, setInput] = useState("");
+
+  const sendMessageHandler = async e => {
+    e.preventDefault();
+    await axios.post("/messages/new", {
+      message: input,
+      timestamp: new Date().toLocaleString(),
+      isRecieved: false,
+    });
+
+    setInput("");
+  };
+
   return (
     <div className="w-2/3 ">
       <div className="flex-col h-full relative overflow-hidden">
@@ -32,31 +47,48 @@ const Chat = () => {
             </IconButton>
           </div>
         </div>
-        <div
-          className="bg-auto h-screen overflow-auto p-4"
-          style={{
-            backgroundImage:
-              "url(https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png)",
-          }}
-        >
-          <div className="flex-col pb-4">
-            <div className="bg-white rounded-lg w-4/5 p-2 text-md">
-              This message is huge and it contains too many words
-              <span style={{fontSize: "xx-small", marginLeft: "10px"}}>
-                {new Date().toUTCString()}
-              </span>
+        <ScrollToBottom className="h-full">
+          <div
+            className="bg-auto p-4"
+            style={{
+              backgroundImage:
+                "url(https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png)",
+            }}
+          >
+            <div className="mb-24">
+              {messages.map(message => {
+                return (
+                  <div key={message._id}>
+                    {message.isRecieved ? (
+                      <div className="flex-col pb-4">
+                        <div className="bg-white rounded-lg w-4/5 p-2 text-md">
+                          {message.message}
+                          <span
+                            style={{fontSize: "xx-small", marginLeft: "10px"}}
+                          >
+                            {message.timestamp}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="pb-4 flex items-center flex-row-reverse">
+                        <div className=""></div>
+                        <div className="bg-green-200 rounded-lg w-4/5 p-2 text-md">
+                          {message.message}
+                          <span
+                            style={{fontSize: "xx-small", marginLeft: "10px"}}
+                          >
+                            {message.timestamp}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="pb-4 flex items-center flex-row-reverse">
-            <div className=""></div>
-            <div className="bg-green-200 rounded-lg w-4/5 p-2 text-md">
-              This message is huge and it contains too many words
-              <span style={{fontSize: "xx-small", marginLeft: "10px"}}>
-                {new Date().toUTCString()}
-              </span>
-            </div>
-          </div>
-        </div>
+        </ScrollToBottom>
         <div className="absolute bottom-0 text-gray-600 flex justify-around items-center right-0 bg-gray-200 py-2 w-full">
           <div className="w-1/6 px-6">
             <InsertEmoticon />
@@ -64,10 +96,16 @@ const Chat = () => {
           <form action="" className="w-full inline-block  mr-6">
             <input
               type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
               className="text-xs py-1 rounded-full px-4 w-full focus:outline-none"
               placeholder="Type a message"
             />
-            <button type="submit" className="hidden">
+            <button
+              type="submit"
+              onClick={sendMessageHandler}
+              className="hidden"
+            >
               Send a message
             </button>
           </form>
